@@ -12,33 +12,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/recycler_view"
+        android:layout_above="@+id/bottom_layout"
     />
-    <LinearLayout
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:id="@+id/bottom_layout">
+        android:id="@+id/bottom_layout"
+        android:padding="8dp">
+
         <ImageButton
             android:id="@+id/mic_btn"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginEnd="10dp"
             android:layout_gravity="center"
+            android:layout_centerVertical="true"
             android:src="@drawable/mic"
             tools:ignore="SpeakableTextPresentCheck"
             android:background="@drawable/rounded_corner"/>
 
         <EditText
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
             android:id="@+id/message_edit_text"
+            android:layout_width="280dp"
+            android:layout_height="60dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_corner"
             android:hint="Write here ..."
-            android:padding="16dp"
-            android:background="@drawable/rounded_corner" />
+            android:padding="16dp" />
 
         <ImageButton
             android:id="@+id/send_btn"
@@ -46,10 +49,12 @@
             android:layout_height="48dp"
             android:layout_marginStart="10dp"
             android:layout_gravity="center"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:src="@drawable/send"
             tools:ignore="SpeakableTextPresentCheck"
             android:background="@drawable/rounded_corner"/>
+    </RelativeLayout>
 
-    </LinearLayout>
 
 </RelativeLayout>
