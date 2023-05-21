@@ -5,8 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -23,6 +27,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -33,11 +38,21 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
+    String keyAPI;
     RecyclerView recyclerView;
     EditText messageEditText;
     ImageButton sendButton;
     List<Message> messageList;
     MessageAdapter messageAdapter;
+
+
+
+    //Speech to text
+    private ImageButton micButton;
+    private final int REQ_CODE_SPEECH_INPUT = 100;
+    //Speech to text
+
+
     public static final MediaType JSON
             = MediaType.get("application/json; charset=utf-8");
 
@@ -49,6 +64,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        //Speech to text
+        micButton = findViewById(R.id.mic_btn);
+        micButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                promptSpeechInput();
+            }
+        });
+        //Speech to text
+
+        keyAPI = getString(R.string.key_api);
         messageList = new ArrayList<>();
         recyclerView = findViewById(R.id.recycler_view);
         messageEditText = findViewById(R.id.message_edit_text);
@@ -117,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         RequestBody body = RequestBody.create(jsonBody.toString(),JSON);
         Request request = new Request.Builder()
                 .url("https://api.openai.com/v1/completions")
-                .header("Authorization", "Bearer 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")
+                .header("Authorization",keyAPI ) //"Bearer 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"
                 .post(body)
                 .build();
         client.newCall(request).enqueue(new Callback() {
@@ -143,4 +171,45 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
+    //Speech to text
+
+    private void promptSpeechInput() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Say something…");
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(getApplicationContext(),"Sorry! Your device doesn't support speech input", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    messageEditText.setText(result.get(0));
+                    String question = messageEditText.getText().toString().trim();
+                    addToChat(question,Message.SENT_BY_ME);
+                    messageEditText.setText("");
+                    callAPI(question);
+                }
+                break;
+            }
+
+        }
+    }
+    //Speech to text
 }
