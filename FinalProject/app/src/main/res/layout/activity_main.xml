@@ -8,16 +8,56 @@
     android:background="@color/snow">
 
 
+    <ImageButton
+        android:layout_margin="10dp"
+        android:id="@+id/setting_btn"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:src="@drawable/setting"
+        tools:ignore="SpeakableTextPresentCheck"
+        android:background="@drawable/rounded_corner"/>
+
+    <RadioGroup
+        android:background="@drawable/rounded_corner"
+        android:visibility="invisible"
+        android:id="@+id/radio_button_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:checkedButton="@id/radio_button_english">
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Select language/Chọn ngôn ngữ"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textStyle="bold"/>
+        <RadioButton
+            android:id="@+id/radio_button_english"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="English"
+            android:layout_gravity="center"/>
+        <RadioButton
+            android:id="@+id/radio_button_vietnamese"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Tiếng VIệt"/>
+    </RadioGroup>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/recycler_view"
         android:layout_above="@+id/bottom_layout"
+        android:translationZ="-1dp"
     />
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:id="@+id/bottom_layout"
         android:padding="8dp">
@@ -29,6 +69,7 @@
             android:layout_marginEnd="10dp"
             android:layout_gravity="center"
             android:layout_centerVertical="true"
+
             android:src="@drawable/mic"
             tools:ignore="SpeakableTextPresentCheck"
             android:background="@drawable/rounded_corner"/>
@@ -36,11 +77,13 @@
         <EditText
             android:id="@+id/message_edit_text"
             android:layout_width="280dp"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:layout_gravity="center"
             android:background="@drawable/rounded_corner"
             android:hint="Write here ..."
+            android:maxHeight="150dp"
+            android:minHeight="48dp"
             android:padding="16dp" />
 
         <ImageButton
@@ -54,6 +97,8 @@
             android:src="@drawable/send"
             tools:ignore="SpeakableTextPresentCheck"
             android:background="@drawable/rounded_corner"/>
+
+
     </RelativeLayout>
 
 
