@@ -207,8 +207,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     /*############################Chat GPT API###################################*/
 
     void voiceChat(boolean islanguageVietNamese){
-        String rs = String.valueOf(islanguageVietNamese);
-        Toast.makeText(this, rs, Toast.LENGTH_SHORT).show();
         if(islanguageVietNamese){
             /*################################VOSK#########################################*/
             micButton.setOnTouchListener(new View.OnTouchListener() {
@@ -229,10 +227,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         }
         else{
             /*#####################################Speech to text############################################*/
-            micButton.setOnClickListener(new View.OnClickListener() {
+            micButton.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View v) {
-                    promptSpeechInput();
+                public boolean onTouch(View v, MotionEvent event) {
+                    if(event.getAction() == MotionEvent.ACTION_DOWN){
+                        promptSpeechInput();
+                    }
+                    return true;
                 }
             });
             /*#####################################Speech to text############################################*/
