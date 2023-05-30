@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 
 import android.os.Bundle;
 
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.text.method.ScrollingMovementMethod;
@@ -128,7 +129,16 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
             @Override
             public void onClick(View v) {
 
+                new CountDownTimer(500, 1000) {
 
+                    public void onTick(long millisUntilFinished) {
+                        settingButton.setBackgroundResource(0);
+                    }
+
+                    public void onFinish() {
+                        settingButton.setBackgroundResource(R.drawable.rounded_corner);
+                    }
+                }.start();
                 RadioGroup radioGroup = findViewById(R.id.radio_button_group);
 
                 if(radioGroup.getVisibility() == View.INVISIBLE){
@@ -193,10 +203,33 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+//                sendButton.setBackgroundResource(0);
+//                Animation fadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+//                sendButton.startAnimation(fadeOut);
+
+                new CountDownTimer(500, 1000) {
+
+                    public void onTick(long millisUntilFinished) {
+                        sendButton.setBackgroundResource(0);
+                    }
+
+                    public void onFinish() {
+                        sendButton.setBackgroundResource(R.drawable.rounded_corner);
+                    }
+                }.start();
+
                 String question = messageEditText.getText().toString().trim();
                 addToChat(question,Message.SENT_BY_ME);
                 messageEditText.setText("");
                 callAPI(question);
+
+
+
+//                sendButton.setBackgroundResource(R.drawable.rounded_corner);
+//                Animation fadeIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_in);
+//                sendButton.startAnimation(fadeIn);
+//                Toast.makeText(MainActivity.this, "endSend", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -214,9 +247,11 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()){
                         case MotionEvent.ACTION_DOWN:
+                            micButton.setBackgroundResource(0);
                             recognizeMicrophone();
                             break;
                         case MotionEvent.ACTION_UP:
+                            micButton.setBackgroundResource(R.drawable.rounded_corner);
                             pause();
                             break;
                     }
@@ -231,6 +266,16 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if(event.getAction() == MotionEvent.ACTION_DOWN){
+                        new CountDownTimer(500, 1000) {
+
+                            public void onTick(long millisUntilFinished) {
+                                micButton.setBackgroundResource(0);
+                            }
+
+                            public void onFinish() {
+                                micButton.setBackgroundResource(R.drawable.rounded_corner);
+                            }
+                        }.start();
                         promptSpeechInput();
                     }
                     return true;
@@ -342,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
     private void initModel() {
-        StorageService.unpack(this, "model-vn-0.4", "model",
+        StorageService.unpack(this, "model-vn-0.4", "models",
                 (model) -> {
                     this.model = model;
                     setUiState(STATE_READY);
