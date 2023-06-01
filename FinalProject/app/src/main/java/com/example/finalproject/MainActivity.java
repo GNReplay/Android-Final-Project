@@ -178,13 +178,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 
         setUiState(STATE_START);
-        micButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                voiceChat(islanguageVietNamese);
-            }
-        });
-
+        voiceChat(islanguageVietNamese);
         messageEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -223,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 addToChat(question,Message.SENT_BY_ME);
                 messageEditText.setText("");
                 callAPI(question);
+                recognizeMicrophone();
 
 
 
@@ -248,12 +243,14 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     switch (event.getAction()){
                         case MotionEvent.ACTION_DOWN:
                             micButton.setBackgroundResource(0);
-                            recognizeMicrophone();
+                            if (speechService != null)
+                                pause(false);
+                            else
+                                recognizeMicrophone();
                             break;
                         case MotionEvent.ACTION_UP:
                             micButton.setBackgroundResource(R.drawable.rounded_corner);
-                            pause();
-                            break;
+                            pause(true);
                     }
                     return true;
                 }
@@ -302,7 +299,6 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     }
 
     void callAPI(String question){
-        onDestroy();
         messageList.add(new Message("Typing... ", Message.SENT_BY_BOT));
         JSONObject jsonBody = new JSONObject();
         try {
@@ -341,6 +337,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 }
             }
         });
+//        messageEditText.requestFocus();
     }
 
     /*############################Chat GPT API###################################*/
@@ -417,11 +414,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         if (speechService != null) {
             speechService.stop();
             speechService.shutdown();
+            speechService = null;
         }
 
         if (speechStreamService != null) {
             speechStreamService.stop();
         }
+        setUiState(STATE_READY);
     }
 
     @Override
@@ -500,6 +499,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 setErrorState(e.getMessage());
             }
         }
+
     }
 
 
@@ -508,10 +508,10 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         micButton.setEnabled(false);
     }
 
-    private void pause() {
-        setUiState(STATE_READY);
+    private void pause(boolean pause) {
+//        setUiState(STATE_READY);
         if (speechService != null) {
-            speechService.setPause(true);
+            speechService.setPause(pause);
         }
     }
 
