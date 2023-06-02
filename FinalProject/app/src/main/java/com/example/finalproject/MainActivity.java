@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -88,16 +89,16 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     public static final MediaType JSON
             = MediaType.get("application/json; charset=utf-8");
 
-    OkHttpClient client = new OkHttpClient();
-
-
+    OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .build();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
 
         settingButton = findViewById(R.id.setting_btn);
         micButton = findViewById(R.id.mic_btn);
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
 
 //        Toast.makeText(this, keyAPI, Toast.LENGTH_SHORT).show();
 
-
+        setUiState(STATE_START);
         /*################################Init Model VOSK#########################################*/
         int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.RECORD_AUDIO);
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
@@ -177,13 +178,14 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         });
 
 
-        setUiState(STATE_START);
-        micButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                voiceChat(islanguageVietNamese);
-            }
-        });
+        //setUiState(STATE_START);
+        voiceChat(islanguageVietNamese);
+//        micButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                voiceChat(islanguageVietNamese);
+//            }
+//        });
 
         messageEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -194,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                         addToChat(question, Message.SENT_BY_ME);
                         messageEditText.setText("");
                         callAPI(question);
+                        recognizeMicrophone();
                         return true;
                     }
                 }
@@ -223,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                 addToChat(question,Message.SENT_BY_ME);
                 messageEditText.setText("");
                 callAPI(question);
+                recognizeMicrophone();
 
 
 
@@ -248,11 +252,14 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
                     switch (event.getAction()){
                         case MotionEvent.ACTION_DOWN:
                             micButton.setBackgroundResource(0);
-                            recognizeMicrophone();
+                            if (speechService != null)
+                                pause(false);
+                            else
+                                recognizeMicrophone();
                             break;
                         case MotionEvent.ACTION_UP:
                             micButton.setBackgroundResource(R.drawable.rounded_corner);
-                            pause();
+                            pause(true);
                             break;
                     }
                     return true;
@@ -302,7 +309,9 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
     }
 
     void callAPI(String question){
-        onDestroy();
+//        if (speechStreamService != null) {
+//            onDestroy();
+//        }
         messageList.add(new Message("Typing... ", Message.SENT_BY_BOT));
         JSONObject jsonBody = new JSONObject();
         try {
@@ -417,11 +426,13 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         if (speechService != null) {
             speechService.stop();
             speechService.shutdown();
+            speechService = null;
         }
 
         if (speechStreamService != null) {
             speechStreamService.stop();
         }
+        setUiState(STATE_READY);
     }
 
     @Override
@@ -508,10 +519,10 @@ public class MainActivity extends AppCompatActivity implements RecognitionListen
         micButton.setEnabled(false);
     }
 
-    private void pause() {
-        setUiState(STATE_READY);
+    private void pause(boolean pause) {
+       // setUiState(STATE_READY);
         if (speechService != null) {
-            speechService.setPause(true);
+            speechService.setPause(pause);
         }
     }
 

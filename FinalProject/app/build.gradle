@@ -38,7 +38,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation('com.squareup.okhttp3:okhttp:5.0.0-alpha.11')
     implementation 'net.java.dev.jna:jna:5.13.0@aar'
     implementation 'com.alphacephei:vosk-android:0.3.47@aar'
     implementation project(':models')

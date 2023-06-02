@@ -43,12 +43,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 
     @Override
     public int getItemCount() {
-        if(messageList == null){
-            return 0;
-        }
-        else{
-            return messageList.size();
-        }
+//        if(messageList == null){
+//            return 0;
+//        }
+//        else{
+//            return messageList.size();
+//        }
+        return messageList.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
